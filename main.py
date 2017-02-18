@@ -25,8 +25,6 @@ class BlogHandler(webapp2.RequestHandler):
         return user_query.fetch(limit=limit, offset=offset)
        # return None
 
-
-
     def get_user_by_name(self, username):
         """ Get a user object from the db, based on their username """
         user = db.GqlQuery("SELECT * FROM User WHERE username = '%s'" % username)
