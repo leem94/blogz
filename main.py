@@ -29,10 +29,10 @@ class BlogHandler(webapp2.RequestHandler):
         if user:
             return user.get()
 
-    def login_user(self, user):
+    def login_user(self, user): #user is user object
         """ Login a user specified by a User object user """
-        user_id = user.key().id()
-        self.set_secure_cookie('user_id', str(user_id))
+        user_id = user.key().id() #user_id gets unique id for every user
+        self.set_secure_cookie('user_id', str(user_id)) #create secure cookie
 
     def logout_user(self):
         """ Logout a user specified by a User object user """
@@ -54,10 +54,10 @@ class BlogHandler(webapp2.RequestHandler):
             must be signed in to access the path/resource.
         """
         webapp2.RequestHandler.initialize(self, *a, **kw)
-        uid = self.read_secure_cookie('user_id')
+        uid = self.read_secure_cookie('user_id') #get user_id from cookie
         self.user = uid and User.get_by_id(int(uid))
 
-        if not self.user and self.request.path in auth_paths:
+        if not self.user and self.request.path in auth_paths: #if not logged in/trying to see another page
             self.redirect('/login')
 
 class IndexHandler(BlogHandler):
@@ -219,7 +219,7 @@ class SignupHandler(BlogHandler):
         email = self.validate_email(submitted_email)
 
         errors = {}
-        existing_user = self.get_user_by_name(username)
+        existing_user = self.get_user_by_name(username) #finds user in database based on username
         has_error = False
 
         if existing_user:
@@ -228,9 +228,9 @@ class SignupHandler(BlogHandler):
         elif (username and password and verify and (email is not None) ):
 
             # create new user object and store it in the database
-            pw_hash = hashutils.make_pw_hash(username, password)
-            user = User(username=username, pw_hash=pw_hash)
-            user.put()
+            pw_hash = hashutils.make_pw_hash(username, password) #secure hash for password
+            user = User(username=username, pw_hash=pw_hash) #user model object using hash and
+            user.put()                              #un to store in database
 
             # login our new user
             self.login_user(user)
@@ -278,6 +278,7 @@ class LoginHandler(BlogHandler):
 
         if not user:
             self.render_login_form(error="Invalid username")
+
         elif hashutils.valid_pw(submitted_username, submitted_password, user.pw_hash):
             self.login_user(user)
             self.redirect('/blog/newpost')
